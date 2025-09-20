@@ -1,0 +1,27 @@
+{
+  "name": "qa-demo",
+  "version": "1.0.0",
+  "main": "src/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/server.js",
+    "start:test": "PORT=3000 node src/server.js",
+    "test": "jest --coverage",
+    "test:ui": "mocha tests/ui/*.spec.js --timeout 60000",
+    "test:api": "newman run tests/api/postman_collection.json -e tests/api/postman_env.json",
+    "ci:ui": "wait-on http://localhost:3000 && npm run test:ui",
+    "ci:api": "wait-on http://localhost:3000 && npm run test:api"
+  },
+  "devDependencies": {
+    "chai": "^4.4.1",
+    "jest": "^29.7.0",
+    "mocha": "^10.7.0",
+    "newman": "^6.2.1",
+    "selenium-webdriver": "^4.24.0",
+    "supertest": "^7.0.0",
+    "wait-on": "^7.2.0"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "info": { "name": "QA Demo", "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json" },
+  "item": [
+    {
+      "name": "Login - success",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/api/auth/login",
+        "body": { "mode": "raw", "raw": "{\"username\":\"admin\",\"password\":\"password123\"}" }
+      },
+      "event": [{
+        "listen": "test",
+        "script": { "exec": [
+          "pm.test('status 200', ()=> pm.response.code === 200);",
+          "pm.test('has token', ()=> pm.response.json().token);"
+        ], "type": "text/javascript" }
+      }]
+    },
+    {
+      "name": "Add Item - missing name (400)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/api/items",
+        "body": { "mode": "raw", "raw": "{\"name\":\"\"}" }
+      },
+      "event": [{
+        "listen": "test",
+        "script": { "exec": [
+          "pm.test('status 400', ()=> pm.response.code === 400);",
+          "pm.test('error message', ()=> pm.response.json().error);"
+        ], "type": "text/javascript" }
+      }]
+    }
+  ]
+}

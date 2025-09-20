@@ -1,0 +1,48 @@
+﻿name: CI
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Unit tests (Jest)
+        run: npm test
+
+      - name: Setup Chrome
+        uses: browser-actions/setup-chrome@v1
+
+      - name: Start server
+        run: |
+          nohup npm run start:test >/dev/null 2>&1 &
+          npx wait-on http://localhost:3000
+
+      - name: UI tests (Selenium)
+        run: npm run test:ui
+
+      - name: API tests (Newman)
+        run: npm run test:api
+
+      - name: Newman HTML report
+        run: |
+          mkdir -p reports
+          npx newman run tests/api/postman_collection.json -e tests/api/postman_env.json -r html,cli --reporter-html-export reports/api-report.html
+
+      - name: Upload reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: reports/

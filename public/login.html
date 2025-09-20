@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Login</title>
+  <style>
+    body{font-family:system-ui;margin:40px;max-width:480px}
+    label{display:block;margin-top:12px}
+    button{margin-top:16px}
+    .error{color:red;margin-top:8px}
+  </style>
+</head>
+<body>
+  <h1>Login</h1>
+  <label>Username <input id="username" /></label>
+  <label>Password <input id="password" type="password" /></label>
+  <button id="loginBtn">Login</button>
+  <div class="error" id="err"></div>
+  <script>
+    document.getElementById('loginBtn').onclick = async () => {
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const res = await fetch('/api/auth/login', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({username,password})
+      });
+      if(res.ok){
+        localStorage.setItem('auth','true');
+        location.href='/items.html';
+      } else {
+        const data = await res.json();
+        document.getElementById('err').textContent = data.error || 'Login failed';
+      }
+    };
+  </script>
+</body>
+</html>
